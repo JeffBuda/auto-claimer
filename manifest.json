@@ -13,10 +13,15 @@
     "background": {
         "persistent": false,
         "scripts": [
-            "background.js",
-            "contentScript.js"
+            "background.js"
         ]
     },
+    "content_scripts": [{
+        "matches": [
+            "*://*.cnn.com/*",
+            "*://lark.thinkful.com/grading/*"],
+        "js": ["contentScript.js"]
+    }],
     "default_locale": "en",
     "permissions": [
         "contextMenus",

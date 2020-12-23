@@ -6,10 +6,7 @@ chrome.runtime.onMessage.addListener(
     if (sender.tab) {
       // message is from contentScript.js
       // get the selection from the content script
-      request.urls.forEach(url => {
-        chrome.tabs.create({ url: url });
-      });
-
+      console.log(request);
     } else {
       // message is from browser
       // inject the content script to get the selection in the context of the activetab
@@ -19,21 +16,19 @@ chrome.runtime.onMessage.addListener(
     }
   });
 
-  
-
 /**
  * Add the context menu item once
  */
 chrome.contextMenus.removeAll(() => {
   chrome.contextMenus.create({
-    id: 'openSelectedInNewTabs',
-    title: chrome.i18n.getMessage('openSelectedInNewTabs'),
-    contexts: ['selection', 'browser_action'],
+    id: 'startPollingForClaimButton',
+    title: chrome.i18n.getMessage('startPollingForClaimButton'),
+    contexts: ['page', 'page_action', 'browser_action'],
   });
 });
 
 /**
- * When clicked, inject a script into the active tab to get the selected URLs
+ * When clicked, inject a script into the active tab to poll for the Claim button
  */
 chrome.contextMenus.onClicked.addListener(function (info, tab) {
   chrome.tabs.executeScript({

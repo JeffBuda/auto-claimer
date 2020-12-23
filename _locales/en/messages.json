@@ -4,6 +4,6 @@
  "extDesc": {
    "message": "Auto-Claimer",
    "description": "Extension description"},
- "openSelectedInNewTabs": {
-   "message": "Auto-Claimer",
+ "startPollingForClaimButton": {
+   "message": "Start polling for Claim button",
    "description": "context menu button text"}}

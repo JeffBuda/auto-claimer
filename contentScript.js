@@ -1,41 +1,48 @@
-function getUrlsFromSelectedLinks() {
-    const selection = window.getSelection();
-    const urls = [];
-    if (!selection.rangeCount) {
-        return urls;
-    }
-    const range = selection.getRangeAt(0);
 
-    // selected elements:
-    range.cloneContents().querySelectorAll('*')
-        .forEach(selected => selected.querySelectorAll('a')
-            .forEach(link => {
-                urls.push(link.href);
-            }));
-
-    return urls;
+function alreadyClaimed() {
+    return !!document.getElementsByClassName("gd-button-light")[0];  //selector for the Unclaim button
 }
 
-function getUrlsFromText(text) {
-    const urlRegex = /(http|ftp|https):\/\/([\w_-]+(?:(?:\.[\w_-]+)+))([\w.,@?^=%&:\/~+#-]*[\w@?^=%&\/~+#-])?/gi;
-    const urls = [];
-    do {
-        var url = urlRegex.exec(text);
-        if (url) {
-            urls.push(url[0]);
-        } else {
-            break;
-        }
-    } while (true);
-    return urls;
+/* only poll if we don't already have an assignment claimed **/
+var polling = true;
+
+function clickClaimButton() {
+    var claimButton = document.getElementsByClassName("gd-button")[0]; //selector for the Claim button
+    if (claimButton) {
+        claimButton.click();
+        return true;
+    } else {
+        return false;
+    }
+}
+
+function tryAgainLater() {
+    setTimeout(
+        () => {
+            pollForClaimButton();
+        },
+        30 * 1000);
+}
+
+function pollForClaimButton() {
+    if(alreadyClaimed()) {
+        console.warn('An assignment has already been claimed. Refresh page to start polling.');
+        return;
+    }
+    if (!polling || document.readyState !== 'complete') {
+        tryAgainLater();
+    }
+    const buttonClicked = clickClaimButton();
+
+    if (buttonClicked) {
+        polling = false;
+        chrome.runtime.sendMessage({ buttonClicked: true });
+    } else {
+        window.location.reload();
+    }
 }
 
 (() => {
-    const uniqueUrls = new Set([
-        ...getUrlsFromText(document.getSelection().toString()),
-        ...getUrlsFromSelectedLinks()]);
-
-    chrome.runtime.sendMessage({ urls: [...uniqueUrls] });
-
+    tryAgainLater();
 })();
 
