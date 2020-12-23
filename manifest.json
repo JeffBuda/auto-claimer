@@ -18,7 +18,6 @@
     },
     "content_scripts": [{
         "matches": [
-            "*://*.cnn.com/*",
             "*://lark.thinkful.com/grading/*"],
         "js": ["contentScript.js"]
     }],
@@ -26,6 +25,6 @@
     "permissions": [
         "contextMenus",
         "activeTab",
-        "<all_urls>"
+        "*://lark.thinkful.com/grading/*"
     ]
 }

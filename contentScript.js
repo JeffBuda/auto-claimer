@@ -38,6 +38,7 @@ function pollForClaimButton() {
         polling = false;
         chrome.runtime.sendMessage({ buttonClicked: true });
     } else {
+        console.warn(`No assignments found at ${new Date().toLocaleTimeString()}. Refreshing page...`);
         window.location.reload();
     }
 }
