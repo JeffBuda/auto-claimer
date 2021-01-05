@@ -1,13 +1,25 @@
-/**
- * Listen for messages from the injected script and the context menu item
- */
+/** start/stop context menu */
+var contextMenu;
+
+/** state from the content script */
+var state = { polling: undefined, secondsRemaining: undefined };
+
+function contextMenuTitle(details) {
+  return chrome.i18n.getMessage('pollForClaimButton') + ` (${details})`;
+}
+
+function updatePollingMenuItem() {
+  chrome.contextMenus.update(
+    'pollForClaimButton',
+    {
+      checked: state.polling,
+      title: contextMenuTitle(state.polling ? `polling (in ${state.secondsRemaining})...` : `not polling`)
+    });
+}
+
 chrome.runtime.onMessage.addListener(
   function (request, sender, sendResponse) {
-    if (sender.tab) {
-      // message is from contentScript.js
-      // get the selection from the content script
-      console.log(request);
-    } else {
+    if (!sender.tab) {
       // message is from browser
       // inject the content script to get the selection in the context of the activetab
       chrome.tabs.executeScript({
@@ -16,23 +28,45 @@ chrome.runtime.onMessage.addListener(
     }
   });
 
-/**
- * Add the context menu item once
- */
+/** Add the context menu item once */
 chrome.contextMenus.removeAll(() => {
   chrome.contextMenus.create({
-    id: 'startPollingForClaimButton',
-    title: chrome.i18n.getMessage('startPollingForClaimButton'),
-    contexts: ['page', 'page_action', 'browser_action'],
+    id: 'pollForClaimButton',
+    type: 'checkbox',
+    checked: false,
+    title: chrome.i18n.getMessage('pollForClaimButton'),
+    contexts: ['browser_action'],
   });
 });
 
-/**
- * When clicked, inject a script into the active tab to poll for the Claim button
- */
 chrome.contextMenus.onClicked.addListener(function (info, tab) {
-  chrome.tabs.executeScript({
-    file: 'contentScript.js'
+  chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+    state.polling = info.checked;
+    state.tabId = tabs[0].id;
+    updatePollingMenuItem();
   });
 });
+
+(() => {
+  // start main loop
+  state.secondsRemaining = 30;
+
+  setInterval(() => {
+    if (state.polling) {
+      if (state.secondsRemaining > 0) {
+        state.secondsRemaining = state.secondsRemaining - 1;
+      } else {
+        state.secondsRemaining = 30;
+
+        chrome.tabs.executeScript(
+          state.tabId,
+          {
+            file: 'contentScript.js'
+          });
+      }
+      updatePollingMenuItem();
+    }
+  }, 1000);
+})();
+
 

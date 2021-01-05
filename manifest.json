@@ -13,18 +13,17 @@
     "background": {
         "persistent": false,
         "scripts": [
-            "background.js"
+            "background.js",
+            "contentScript.js"
         ]
     },
-    "content_scripts": [{
-        "matches": [
-            "*://lark.thinkful.com/grading/*"],
-        "js": ["contentScript.js"]
-    }],
     "default_locale": "en",
     "permissions": [
         "contextMenus",
         "activeTab",
-        "*://lark.thinkful.com/grading/*"
+        "<all_urls>",
+        "tabs",
+        "*://lark.thinkful.com/grading/*",
+        "storage"
     ]
 }

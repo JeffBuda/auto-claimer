@@ -4,6 +4,6 @@
  "extDesc": {
    "message": "Auto-Claimer",
    "description": "Extension description"},
- "startPollingForClaimButton": {
-   "message": "Start polling for Claim button",
+ "pollForClaimButton": {
+   "message": "Refresh and Claim",
    "description": "context menu button text"}}
