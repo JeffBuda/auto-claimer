@@ -14,19 +14,23 @@ function clickClaimButton() {
     }
 }
 
+/** @returns true if the Claim button was clicked */
 function pollForClaimButton() {
     if (document.readyState !== 'complete') {
-        return;
+        return false;
     }
 
     if (alreadyClaimed()) {
-        return;
+        return false;
     }
+    
     const buttonClicked = clickClaimButton();
-
-    if (!buttonClicked) {
-        window.location.reload();
+    if(buttonClicked) {
+        return true;
     }
+
+    window.location.reload();
+    return false;
 }
 
 pollForClaimButton();

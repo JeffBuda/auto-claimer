@@ -58,10 +58,17 @@ chrome.contextMenus.onClicked.addListener(function (info, tab) {
       } else {
         state.secondsRemaining = 30;
 
-        chrome.tabs.executeScript(
+        const results = chrome.tabs.executeScript(
           state.tabId,
           {
             file: 'contentScript.js'
+          },
+          results => {
+            // content script returns true if the Claim button was clicked
+            if (results && results[0] === true) {
+              state.polling = false; // uncheck the menu item if we clicked Claim 
+              updatePollingMenuItem();
+            }
           });
       }
       updatePollingMenuItem();
