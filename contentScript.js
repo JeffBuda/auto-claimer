@@ -4,7 +4,7 @@ function alreadyClaimed() {
 }
 
 /** @returns true if the Claim button was pressed. Prefers longer assignments */
-function clickClaimButton2() {
+function clickClaimButton() {
     const availableRows = Array.from(document
         .getElementsByClassName('grading-table-row'))
         .filter(row => row.querySelectorAll('.grading-table-cell__claimed').length === 1
@@ -16,7 +16,7 @@ function clickClaimButton2() {
     }));
 
     if (assignments.length === 0) {
-        console.log('poll: no assignments found.')
+        console.log('auto-claimer: no assignments found.')
         return false;
     }
 
@@ -28,30 +28,14 @@ function clickClaimButton2() {
     const capstonesAssignments = assignments.filter(a => a.name.toLowerCase().indexOf('capstone') > -1);
     if (capstonesAssignments.length > 0) {
         capstonesAssignments[0].claimButton.click();
+        console.log('auto-claimer: Claiming capstone...')
         return true;
     }
 
     //take any assignment available
     assignments[0].clickClaimButton.click();
+    console.log('auto-claimer: Claiming assignment...')
     return true;
-}
-
-/** @returns true if the Claim button was pressed */
-function clickClaimButton() {
-
-    //temporary workaround for unclaimed assignment:
-    const count = document.getElementsByClassName("gd-button").length;
-    if (count <= 1)
-        return false;
-
-    //the first one should be unclaimed, claim the second one.
-    var claimButton = document.getElementsByClassName("gd-button")[1]; //selector for the Claim button
-    if (claimButton) {
-        claimButton.click();
-        return true;
-    } else {
-        return false;
-    }
 }
 
 /** @returns true if the Claim button was clicked */
