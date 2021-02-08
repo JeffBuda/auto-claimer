@@ -13,7 +13,8 @@ function clickClaimButton() {
     const assignments = availableRows.map(row => ({
         name: row.querySelectorAll('.grading-table-cell__checkpoint')[0].innerText,
         claimButton: row.querySelectorAll('.grading-table-cell__claimed')[0].querySelectorAll('button')[0]
-    }));
+    }))
+    .filter(row => !!row.claimButton); //only assignments w/ Claim buttons are available.
 
     if (assignments.length === 0) {
         console.log('auto-claimer: no assignments found.')
@@ -23,7 +24,13 @@ function clickClaimButton() {
     //WARNING: temporarily skip first assignment
     //NOTE: skip the first assignment from TEST ACCOUNT
     assignments.shift();// remove the first available assignment
+    if (assignments.length === 0) {
+        console.log('auto-claimer: no assignments found.')
+        return false;
+    }
+    // END TEMP code
 
+    
     //prefer capstone assignments b/c they're longer
     const capstonesAssignments = assignments.filter(a => a.name.toLowerCase().indexOf('capstone') > -1);
     if (capstonesAssignments.length > 0) {
@@ -33,7 +40,7 @@ function clickClaimButton() {
     }
 
     //take any assignment available
-    assignments[0].clickClaimButton.click();
+    assignments[0].claimButton.click();
     console.log('auto-claimer: Claiming assignment...')
     return true;
 }
